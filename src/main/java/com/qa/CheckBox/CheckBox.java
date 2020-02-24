@@ -1,3 +1,4 @@
+package com.qa.CheckBox;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -5,9 +6,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.springframework.util.SystemPropertyUtils;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -15,10 +18,26 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 public class CheckBox {
 	
 	WebDriver driver;
+	@Parameters("browsername")
 	@BeforeMethod
-	public void setUp() {
+	public void setUp(String browsername) {
+		System.out.println("the browser name is ==>"+browsername);
+		System.out.println("the thread count is ==>"+ Thread.currentThread().getId());
+		if(browsername.equalsIgnoreCase("chrome")) {
 		WebDriverManager.chromedriver().setup();
 		driver = new ChromeDriver();
+		} else if(browsername.equalsIgnoreCase("firefox")) {
+			WebDriverManager.firefoxdriver().setup();
+			driver= new FirefoxDriver();
+		}else if(browsername.equalsIgnoreCase("IE")) {
+			WebDriverManager.iedriver().setup();
+			driver= new InternetExplorerDriver();
+			
+			
+		}
+		
+		driver.manage().window().maximize();
+		driver.manage().deleteAllCookies();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
 		driver.get("http://seleniumpractise.blogspot.com/2016/08/how-to-automate-radio-button-in.html");
@@ -26,7 +45,7 @@ public class CheckBox {
 		
 	}
 	
-	@Test
+	@Test(priority =1)
 	public void radioBtncheckBoxTest() {
     List<WebElement>checkboxs =driver.findElements(By.xpath("//input[@name='lang' and  @type='radio']"));
     
@@ -48,7 +67,7 @@ public class CheckBox {
 		
 	}
    
-	@Test
+	@Test(priority=2)
 	public void checkBoxTest() {
 		List<WebElement>element = driver.findElements(By.xpath("//input[@name='lang' and  @type='checkbox']"));
 		System.out.println("the size of the check box's is ==>"+element.size());
@@ -63,7 +82,7 @@ public class CheckBox {
 	
 	@AfterMethod
 	public void tearDown() {
-		//driver.quit();
+		driver.quit();
 		
 	}
 }
